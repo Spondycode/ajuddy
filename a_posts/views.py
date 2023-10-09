@@ -1,3 +1,6 @@
 from django.shortcuts import render
 
-# Create your views here.
+def home_view(request):
+    title = 'Welcome To The Pleasure Dome'
+    context = {'title' :title}
+    return render(request, 'a_posts/home.html', context)
