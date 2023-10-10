@@ -3,6 +3,8 @@ import uuid
 
 class Post(models.Model):
     title = models.CharField(max_length=500)
+    artist = models.CharField(max_length=250, null=True)
+    url = models.URLField(max_length=500, null=True)
     image = models.URLField(max_length=500)
     body = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
@@ -10,4 +12,7 @@ class Post(models.Model):
 
     def __str__(self):
         return str(self.title)
+
+    class Meta:
+        ordering = ['-created']
 

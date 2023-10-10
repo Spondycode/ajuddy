@@ -1,5 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import *
+from django.forms import ModelForm
+from django import forms
+from bs4 import BeautifulSoup
+import requests
+from django.contrib import messages
 
 def home_view(request):
     posts = Post.objects.all()
@@ -7,5 +12,64 @@ def home_view(request):
     return render(request, 'a_posts/home.html', context)
 
 
+class PostCreateForm(ModelForm):
+    class Meta:
+        model = Post
+        fields = ['url', 'body']
+        labels = {
+            'body' : "Caption"
+        }
+        widgets = {
+            'body' : forms.Textarea(attrs={'rows': 3, 'placeholder': "Add a Caption..", 'class': 'font1 text-3xl'}),
+            'url' : forms.TextInput(attrs={'placeholder': 'add url ...'}),
+        }
+
+
 def post_create_view(request):
-    return render(request, 'a_posts/post_create.html')
+    form = PostCreateForm()
+
+    if request.method == 'POST':
+        form = PostCreateForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+
+            website = requests.get(form.data['url'])
+            sourcecode = BeautifulSoup(website.text, 'html.parser')
+
+            find_image = sourcecode.select('meta[content^="https://live.staticflickr.com/"]')
+            try:   
+                image = find_image[0]['content']
+            except:
+                messages.error(request, 'Requested image is not on Flickr!')
+                return redirect('post-create')
+
+
+            image = find_image[0]['content']
+            post.image = find_image
+
+            find_title = sourcecode.select('h1.photo-title')
+            title = find_title[0].text.strip()
+            post.title = title
+
+
+            find_artist = sourcecode.select('a.owner-name')
+            artist = find_artist[0].text.strip()
+            post.artist = artist
+
+            post.save()
+            return redirect('home')
+
+    context = {'form' :form}
+    return render(request, 'a_posts/post_create.html', context)
+
+
+def post_delete_view(request, pk):
+    post = Post.objects.get(id=pk)
+
+    if request.method == "POST":
+        post.delete()
+        messages.success(request, 'The post was deleted...')
+        return redirect('home')
+
+    context = {'post': post}
+    return render(request, 'a_posts/post_delete.html', context)
