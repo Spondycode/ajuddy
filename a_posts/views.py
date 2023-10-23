@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from bs4 import BeautifulSoup
 from .models import *
 from .forms import *
@@ -19,6 +20,7 @@ def home_view(request, tag=None):
 
 
 
+@login_required
 def post_create_view(request):
     form = PostCreateForm()
 
@@ -50,6 +52,9 @@ def post_create_view(request):
             artist = find_artist[0].text.strip()
             post.artist = artist
 
+
+            post.author = request.user
+
             post.save()
             form.save_m2m()
             return redirect('home')
@@ -58,8 +63,9 @@ def post_create_view(request):
     return render(request, 'a_posts/post_create.html', context)
 
 
+@login_required
 def post_delete_view(request, pk):
-    post = get_object_or_404(Post, id=pk)
+    post = get_object_or_404(Post, id=pk, author=request.user)
 
     if request.method == "POST":
         post.delete()
@@ -70,8 +76,9 @@ def post_delete_view(request, pk):
     return render(request, 'a_posts/post_delete.html', context)
 
 
+@login_required
 def post_edit_view(request, pk):
-    post = get_object_or_404(Post, id=pk)
+    post = get_object_or_404(Post, id=pk, author=request.user)
     form = PostEditForm(instance=post)
 
     if request.method == "POST":
@@ -87,6 +94,24 @@ def post_edit_view(request, pk):
 
 def post_page_view(request, pk):
     post = get_object_or_404(Post, id=pk)
-    context = {'post': post}
+    commentform = CommentCreateForm()
+
+    context = {
+        'post': post,
+        'commentform': commentform
+    }
     return render(request, 'a_posts/post_page.html', context)
-                   
+
+@login_required
+def comment_sent(request, pk):
+    post = get_object_or_404(Post, id=pk)
+
+    if request.method == 'POST':
+        form = CommentCreateForm(request.POST)
+        if form.is_valid:
+            comment = form.save(commit=False)
+            comment.author = request.user
+            comment.parent_post = post
+            comment.save()
+
+    return redirect('post', post.id)

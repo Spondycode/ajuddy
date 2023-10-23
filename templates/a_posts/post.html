@@ -9,7 +9,7 @@
     </figure>
     <div class="p-4 pb-2">
         {% if post.author %}
-        <a class="flex items-center gap-1 mb-4" href="{% url 'userprofile' post.author.username  %}">
+        <a class="flex items-center gap-1 mb-4" href="{{ post.author.username  }}">
             <img class="w-8 h-8 object-cover rounded-full" src="{{ post.author.profile.avatar }}">
             <span class="font-bold hover:underline">{{ post.author.profile.name }}</span>
             <span class="text-sm text-gray-400">@{{ post.author.username }}</span>
@@ -28,20 +28,29 @@
             <a href="{% url 'category' tag.slug %}" class="bg-gray-200 rounded-full px-3 py-1 hover:bg-gray-800 hover:text-white">{{ tag }}</a>
     {% endfor %}
         </div>
-        <div class="flex items-center justify-between text-sm px-2">
-            <a class="font-bold hover:underline" href="{% url 'post' post.id %}">
-                Comments
-                <span class="font-light text-gray-500 ml-1">3</span>
-            </a>
-            <div class="flex items-center gap-4 [&>a:hover]:underline">
-                <div class="flex items-center gap-1">
-                    <img class="w-5 -mt-1" src="https://img.icons8.com/small/24/000000/hearts.png">
-                    1
-                </div>
-                <a href="">Like</a>
-                <a href="{% url 'post-edit' post.id %}">Edit</a>
-                <a href="{% url 'post-delete' post.id %}">Delete</a>
-            </div>
+    <div class="flex items-center justify-between text-sm px-2">
+      <a class="font-bold hover:underline" href="{% url 'post' post.id %}">
+        {% if post.comments.count %}
+        Comments
+        <span class="font-light text-gray-500 ml-1">{{ post.comments.count }}</span>
+        {% else %}
+          {% if user.is_authenticated %}
+            Add a Comment...
+          {% endif %}
+        {% endif %}
+      </a>
+
+      <div class="flex items-center gap-4 [&>a:hover]:underline">
+        <div class="flex items-center gap-1">
+          <img class="w-5 -mt-1" src="https://img.icons8.com/small/24/000000/hearts.png">
+            1
+        </div>
+        <a href="">Like</a>
+        {% if user.is_authenticated and user == post.author%}
+          <a href="{% url 'post-edit' post.id %}">Edit</a>
+          <a href="{% url 'post-delete' post.id %}">Delete</a>
+        {% endif %}
+      </div>
         </div>
     </div>
 </article>
