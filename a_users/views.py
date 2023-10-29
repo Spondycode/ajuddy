@@ -16,8 +16,12 @@ def profile_view(request, username=None):
             profile = request.user.profile
         except:
             raise Http404()
-    context = {'profile': profile}
+
+    posts = profile.user.posts.all()
+
+    context = {'profile': profile, 'posts': posts}
     return render(request, 'a_users/profile.html', context)
+
 
 @login_required
 def profile_edit_view(request):
