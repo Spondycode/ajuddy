@@ -3,8 +3,7 @@
     <div class="flex items-center justify-between h-20">
         <logo>
             <a class="flex items-center gap-1" href="/">
-                <img class="w-7 -mt-1" src="{% static 'images/fireheart_white.svg' %}"
-/>
+                <img class="w-7 -mt-1" src="{% static 'images/fireheart_white.svg' %}"/>
                 <span class="text-lg font-bold">Awesome</span>
             </a>
         </logo>
@@ -23,6 +22,7 @@
                       {% if user.is_authenticated %}
             <li><a href="/">Home</a></li>
             <li><a href="{% url 'post-create'  %}">Create Post</a></li>
+            <li><a href="{% url 'inbox'  %}">Inbox</a></li>
             <li x-data="{ dropdownOpen: false }" class="relative">
                 <a @click="dropdownOpen = !dropdownOpen" @click.away="dropdownOpen = false" class="cursor-pointer select-none">
                     <img class="h-8 w-8 rounded-full object-cover" src="{{ user.profile.avatar }}"/>

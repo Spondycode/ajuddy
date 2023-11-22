@@ -11,7 +11,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', include('admin_honeypot.urls', namespace='admin_honeypot')),
+    path('thebosss/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('', home_view, name='home'),
     path('category/<tag>/', home_view, name="category"),
@@ -23,6 +24,7 @@ urlpatterns = [
     path('reply/like/<pk>/', like_reply, name='like-reply'),
     path('comment/like/<pk>/', like_comment, name='like-comment'),
     path('profile/', profile_view, name='profile'),
+    path('inbox/', include('a_inbox.urls')),
     path('<username>/', profile_view, name='userprofile'),
     path('profile/edit/', profile_edit_view, name='profile-edit'),
     path('profile/delete/', profile_delete_view, name='profile-delete'),

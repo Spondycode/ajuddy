@@ -49,6 +49,12 @@
           <a href="{% url 'post-delete' post.id %}">Delete</a>
     {% endif %}
       </div>
+
+      <button hx-post="/clicked" hx-swap="outerHTML">
+    Click Me
+  </button>
+
+
         </div>
     </div>
 </article>

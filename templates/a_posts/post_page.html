@@ -28,9 +28,9 @@
     </div>
     <!-- Here is the section for the Comments - looped -->
         <div id="tab-contents">
-  {% for comment in post.comments.all %}
-              {% include 'a_posts/comment.html' %}
-  {% endfor %}
+          {% for comment in post.comments.all %}
+          {% include 'a_posts/comment.html' %}
+          {% endfor %}
         </div>
 
     </div>
