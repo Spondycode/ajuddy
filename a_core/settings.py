@@ -9,7 +9,6 @@ env = environ.Env(
 environ.Env.read_env()
 ENVIRONMENT = env('ENVIRONMENT', default='production')
 
-
 from pathlib import Path
 import dj_database_url
 
@@ -22,7 +21,6 @@ else:
     DEBUG = False
 
 
-...
 SECRET_KEY = env('SECRET_KEY')
 # ENCRYPT_KEY = env('ENCRYPT_KEY')
 ALLOWED_HOSTS = ['127.0.0.1',]
